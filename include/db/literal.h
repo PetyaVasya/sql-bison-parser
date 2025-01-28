@@ -30,11 +30,15 @@ struct Text : Type {
 };
 
 struct Literal : SqlSerializable {
-    std::variant<Integer, Text> literal;
+    std::variant<Integer, Text, std::monostate> literal;
 
-    template <typename T>
-    Literal(T&& litreal)
-        : literal(std::forward<T>(litreal))
+    Literal()
+        : literal(std::monostate())
+        {}
+
+    template <typename T, std::enable_if_t<!std::is_same_v<Literal, std::remove_reference_t<T>>, bool> = true>
+    Literal(T&& literal)
+        : literal(std::forward<T>(literal))
         {}
 
     void to_sql(std::ostream &os) const override;

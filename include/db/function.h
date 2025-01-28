@@ -11,6 +11,8 @@ struct FunctionCall : Name {
     using Name::Name;
     std::vector<Value> args;
 
+    FunctionCall() = default;
+
     FunctionCall(Name name, std::initializer_list<Value> args)
         : Name(std::move(name))
         , args(args)

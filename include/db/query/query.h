@@ -84,9 +84,13 @@ struct SelectQuery : BaseQuery {
 };
 
 struct Queries : SqlSerializable {
-    std::variant<SelectQuery> query;
+    std::variant<SelectQuery, std::monostate> query;
 
-    template <typename T>
+    Queries()
+        : query(std::monostate())
+        {}
+
+    template <typename T, std::enable_if_t<!std::is_same_v<Queries, std::remove_reference_t<T>>, bool> = true>
     Queries(T&& query)
         : query(std::forward<T>(query))
         {}

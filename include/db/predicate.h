@@ -4,9 +4,13 @@
 #include <variant>
 
 struct Predicate : SqlSerializable {
-    enum Type { AND, OR, VALUE };
+    enum Type { AND, OR, VALUE, UNSET };
 
     Type type;
+
+    Predicate()
+        : type(Type::UNSET)
+        {}
 
     Predicate(Type type)
         : type(type)

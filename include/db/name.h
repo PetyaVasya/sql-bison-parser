@@ -6,6 +6,8 @@
 struct Name: SqlSerializable {
     std::string name;
 
+    Name() = default;
+
     Name(std::string name)
         : name(std::move(name))
         {}
