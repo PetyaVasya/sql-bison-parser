@@ -5,7 +5,7 @@
 #include <memory>
 #include <sstream>
 
-TEST(ParserTest, TestOutput)
+TEST(QueryTest, TestOutput)
 {
     std::ifstream sql{"tests/etc/query.sql"};
     std::stringstream buffer;
