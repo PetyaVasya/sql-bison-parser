@@ -1,6 +1,6 @@
 #pragma once
-#include "value.h"
 #include "serialize/sql.h"
+#include "value.h"
 #include <variant>
 
 struct Predicate : SqlSerializable {
@@ -12,79 +12,47 @@ struct Predicate : SqlSerializable {
         : type(type)
     {}
 
-    void to_sql(std::ostream &os) const override {
-        switch (type) {
-            case Type::AND:
-                os << " AND ";
-                break;
-            case Type::OR:
-                os << " OR ";
-                break;
-            default:
-                break;
-        }
-    }
+    void to_sql(std::ostream &os) const override;
 };
 
-template <typename Left, typename Right>
-struct TypedPredicate : Predicate {
-    Left left;
-    Right right;
+struct ValuePredicate : Predicate {
+    enum Operator { EQ, NEQ, LE, GR };
 
-    TypedPredicate(Predicate::Type type, Left left, Right right) 
+    Value left;
+    Value right;
+    Operator comp_operator;
+
+    ValuePredicate(Operator comp_operator, Value left, Value right) 
+        : Predicate(Predicate::Type::VALUE)
+        , left(std::move(left))
+        , right(std::move(right))
+        , comp_operator(comp_operator)
+        {}
+    
+    void to_sql(std::ostream &os) const override;
+};
+
+struct PredicateCompose : Predicate {
+    Predicate left;
+    Predicate right;
+
+    PredicateCompose(Predicate::Type type, Predicate left, Predicate right) 
         : Predicate(type)
         , left(std::move(left))
         , right(std::move(right))
         {}
 
-    void to_sql(std::ostream &os) const override {
-        left.to_sql(os);
-        Predicate::to_sql(os);
-        right.to_sql(os);
-    }
+    void to_sql(std::ostream &os) const override;
 };
-
-struct ValuePredicate : TypedPredicate<Value, Value> {
-
-    enum Operator { EQ, NEQ, LE, GR };
-
-    Operator comp_operator;
-
-    ValuePredicate(Operator comp_operator, Value left, Value right) 
-        : TypedPredicate(Predicate::Type::VALUE, std::move(left), std::move(right))
-        , comp_operator(comp_operator)
-        {}
-    
-    void to_sql(std::ostream &os) const override {
-        left.to_sql(os);
-        switch (comp_operator) {
-            case Operator::EQ:
-                os << " = ";
-                break;
-            case Operator::NEQ:
-                os << " != ";
-                break;
-            case Operator::LE:
-                os << " < ";
-                break;
-            case Operator::GR:
-                os << " > ";
-                break;
-        }
-        right.to_sql(os);
-    }
-};
-
-using PredicateCompose = TypedPredicate<Predicate, Predicate>;
 
 struct OrPredicate : PredicateCompose {
     OrPredicate(Predicate left, Predicate right) 
-        : TypedPredicate(Predicate::Type::OR, std::move(left), std::move(right))
+        : PredicateCompose(Predicate::Type::OR, std::move(left), std::move(right))
         {}
 };
 
 struct AndPredicate : PredicateCompose {
     AndPredicate(Predicate left, Predicate right) 
-        : TypedPredicate(Predicate::Type::AND, std::move(left), std::move(right))
+        : PredicateCompose(Predicate::Type::AND, std::move(left), std::move(right))
         {}
 };

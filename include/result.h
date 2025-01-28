@@ -7,8 +7,8 @@ struct Result: public SqlSerializable {
     std::variant<Queries> command;
 
     template <typename T>
-    Result(T command) 
-        : command(std::move(command))
+    Result(T&& command) 
+        : command(std::forward<T>(command))
     {}
 
     void to_sql(std::ostream &os) const override;

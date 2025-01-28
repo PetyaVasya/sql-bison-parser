@@ -12,7 +12,7 @@ struct Integer : Type {
         : value(value)
         {}
 
-    void to_sql(std::ostream &os) const override { os << value; }
+    void to_sql(std::ostream &os) const override;
 };
 
 struct Text : Type {
@@ -26,25 +26,16 @@ struct Text : Type {
         : value(value)
         {}
 
-    void to_sql(std::ostream &os) const override {
-        os << '\'';
-        for (std::size_t i = 0; i < value.size(); ++i) {
-            os << value.at(i);
-            if (value.at(i) == '\'') {
-                os << '\'';
-            }
-        }
-        os << '\'';
-        }
+    void to_sql(std::ostream &os) const override;
 };
 
-struct Literal : public std::variant<Integer, Text>, SqlSerializable {
-    using std::variant<Integer, Text>::variant;
+struct Literal : SqlSerializable {
+    std::variant<Integer, Text> literal;
 
-    void to_sql(std::ostream &os) const override {
-        static const overloads converter {
-            [&os](const auto& arg) { arg.to_sql(os); }
-        };
-        std::visit(converter, *this);
-    }
+    template <typename T>
+    Literal(T&& litreal)
+        : literal(std::forward<T>(litreal))
+        {}
+
+    void to_sql(std::ostream &os) const override;
 };

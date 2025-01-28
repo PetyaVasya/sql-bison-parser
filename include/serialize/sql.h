@@ -3,7 +3,7 @@
 
 struct SqlSerializable {
     virtual void to_sql(std::ostream &os) const = 0;
-    virtual ~SqlSerializable() {};
+    virtual ~SqlSerializable() = default;
 protected:
 
     template <typename T>

@@ -4,7 +4,7 @@ void Source::to_sql(std::ostream &os) const {
     static const overloads converter {
         [&os](const auto& arg) { arg.to_sql(os); }
     };
-    std::visit(converter, *this);
+    std::visit(converter, source);
 }
 
 void QualifiedSource::to_sql(std::ostream &os) const {
@@ -62,6 +62,6 @@ void Queries::to_sql(std::ostream &os) const {
 
     std::visit(
         converter,
-        *this
+        query
     );
 }

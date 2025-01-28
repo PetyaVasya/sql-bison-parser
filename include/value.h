@@ -4,18 +4,19 @@
 #include "serialize/sql.h"
 
 struct Value;
+struct QualifiedValue;
+struct SelectQuery;
 
 #include "function.h"
 
-struct Value : std::variant<Name, Literal, FunctionCall, ArrayCall>, SqlSerializable {
-    using std::variant<Name, Literal, FunctionCall, ArrayCall>::variant;
+struct Value : SqlSerializable {
+    std::variant<Name, Literal, FunctionCall, ArrayCall, SelectQuery*> value;
+    template <typename T>
+    Value(T value)
+        : value(std::move(value))
+        {}
 
-    void to_sql(std::ostream &os) const override {
-        static const overloads converter {
-            [&os](const auto& arg) { arg.to_sql(os); }
-        };
-        std::visit(converter, *this);
-    }
+    void to_sql(std::ostream & os) const override;
 };
 
 struct QualifiedValue : Value, AlternativeName {
@@ -27,8 +28,5 @@ struct QualifiedValue : Value, AlternativeName {
         , AlternativeName(std::move(alternative))
         {}
 
-    void to_sql(std::ostream &os) const override  {
-        Value::to_sql(os);
-        AlternativeName::to_sql(os);
-    }
+    void to_sql(std::ostream &os) const override;
 };

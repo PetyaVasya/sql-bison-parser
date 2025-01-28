@@ -1,4 +1,5 @@
 #pragma once
+#include "serialize/sql.h"
 #include <string>
 #include <optional>
 
@@ -13,7 +14,7 @@ struct Name: SqlSerializable {
         : name(name)
         {}
 
-    void to_sql(std::ostream &os) const override { os << name; }
+    void to_sql(std::ostream &os) const override;
 };
 
 struct AlternativeName : SqlSerializable {
@@ -24,10 +25,5 @@ struct AlternativeName : SqlSerializable {
         : alternative(value)
         {}
 
-    void to_sql(std::ostream &os) const override {
-        if (alternative.has_value()) {
-            os << " AS ";
-            alternative.value().to_sql(os);
-        }
-    }
+    void to_sql(std::ostream &os) const override;
 };

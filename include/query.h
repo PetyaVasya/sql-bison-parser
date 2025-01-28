@@ -6,8 +6,13 @@
 #include <vector>
 #include <optional>
 
-struct Source : public std::variant<FunctionCall, Table>, SqlSerializable {
-    using std::variant<FunctionCall, Table>::variant;
+struct Source : SqlSerializable {
+    std::variant<FunctionCall, Table> source;
+
+    template <typename T>
+    Source(T&& source)
+        : source(std::forward<T>(source))
+        {}
     
     void to_sql(std::ostream &os) const override;
 };
@@ -16,8 +21,8 @@ struct QualifiedSource : Source, AlternativeName {
     using Source::Source;
 
     template <typename T>
-    QualifiedSource(T source, Name alternative)
-        : Source(std::move(source))
+    QualifiedSource(T&& source, Name alternative)
+        : Source(std::forward<T>(source))
         , AlternativeName(std::move(alternative))
         {}
 
@@ -101,7 +106,13 @@ struct SelectQuery : BaseQuery {
     void to_sql(std::ostream &os) const override;
 };
 
-struct Queries : public std::variant<SelectQuery>, SqlSerializable {
-    using std::variant<SelectQuery>::variant;
+struct Queries : SqlSerializable {
+    std::variant<SelectQuery> query;
+
+    template <typename T>
+    Queries(T&& query)
+        : query(std::forward<T>(query))
+        {}
+
     void to_sql(std::ostream& os) const override;
 };
