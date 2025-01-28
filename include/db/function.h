@@ -13,6 +13,11 @@ struct FunctionCall : Name {
 
     FunctionCall() = default;
 
+    FunctionCall(Name name, std::vector<Value> args)
+        : Name(std::move(name))
+        , args(std::move(args))
+        {}
+
     FunctionCall(Name name, std::initializer_list<Value> args)
         : Name(std::move(name))
         , args(args)
@@ -32,6 +37,15 @@ struct FunctionCall : Name {
 };
 
 struct ArrayCall: FunctionCall {
+
+    ArrayCall()
+        : FunctionCall("ARRAY")
+        {}
+
+    ArrayCall(std::vector<Value> args)
+        : FunctionCall("ARRAY", std::move(args))
+        {}
+
     ArrayCall(std::initializer_list<Value> args)
         : FunctionCall("ARRAY", args)
         {}

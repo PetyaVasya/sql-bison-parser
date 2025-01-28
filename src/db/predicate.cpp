@@ -34,7 +34,7 @@ void ValuePredicate::to_sql(std::ostream &os) const  {
 
 void PredicateCompose::to_sql(std::ostream &os) const
 {
-    left.to_sql(os);
+    left->to_sql(os);
     Predicate::to_sql(os);
-    right.to_sql(os);
+    right->to_sql(os);
 }

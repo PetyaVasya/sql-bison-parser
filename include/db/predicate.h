@@ -37,10 +37,14 @@ struct ValuePredicate : Predicate {
 };
 
 struct PredicateCompose : Predicate {
-    Predicate left;
-    Predicate right;
+    std::unique_ptr<Predicate> left;
+    std::unique_ptr<Predicate> right;
 
-    PredicateCompose(Predicate::Type type, Predicate left, Predicate right) 
+    PredicateCompose(
+        Predicate::Type type,
+        std::unique_ptr<Predicate>&& left,
+        std::unique_ptr<Predicate>&& right
+    ) 
         : Predicate(type)
         , left(std::move(left))
         , right(std::move(right))
@@ -50,13 +54,13 @@ struct PredicateCompose : Predicate {
 };
 
 struct OrPredicate : PredicateCompose {
-    OrPredicate(Predicate left, Predicate right) 
+    OrPredicate(std::unique_ptr<Predicate>&& left, std::unique_ptr<Predicate>&& right) 
         : PredicateCompose(Predicate::Type::OR, std::move(left), std::move(right))
         {}
 };
 
 struct AndPredicate : PredicateCompose {
-    AndPredicate(Predicate left, Predicate right) 
+    AndPredicate(std::unique_ptr<Predicate>&& left, std::unique_ptr<Predicate>&& right) 
         : PredicateCompose(Predicate::Type::AND, std::move(left), std::move(right))
         {}
 };

@@ -49,9 +49,16 @@ void SelectQuery::to_sql(std::ostream &os) const {
         SqlSerializable::to_sql(os, values);
         os << " ";
     }
-    BaseQuery::to_sql(os);
+    if (from.has_value()) {
+        from.value().to_sql(os);
+        os << " ";
+    }
     if (!joins.empty()) {
         SqlSerializable::to_sql(os, joins, " ");
+        os << " ";
+    }
+    if (where.has_value()) {
+        where.value().to_sql(os);
         os << " ";
     }
 }

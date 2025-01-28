@@ -8,8 +8,14 @@
 
 struct FromClause : SqlSerializable {
     std::vector<QualifiedSource> sources;
+    FromClause() = default;
     FromClause(std::initializer_list<QualifiedSource> args)
         : sources(args)
+        {}
+
+    template <typename T, std::enable_if_t<!std::is_same_v<FromClause, std::remove_reference_t<T>>, bool> = true>
+    FromClause(T&& args)
+        : FromClause({std::forward<T>(args),})
         {}
 
     template <typename... T>
@@ -68,6 +74,17 @@ struct SelectQuery : BaseQuery {
     std::vector<JoinClause> joins;
 
     SelectQuery() = default;
+
+    SelectQuery(
+        std::vector<QualifiedValue> values,
+        std::optional<FromClause> from = {},
+        std::optional<WhereClause> where = {},
+        std::vector<JoinClause> joins = {}
+    )
+    : BaseQuery{std::move(from), std::move(where)}
+    , values(values)
+    , joins(std::move(joins))
+    {}
 
     SelectQuery(
         std::initializer_list<QualifiedValue> values,

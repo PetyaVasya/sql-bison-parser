@@ -26,6 +26,9 @@ struct AlternativeName : SqlSerializable {
     AlternativeName(Name value)
         : alternative(value)
         {}
+    AlternativeName(std::optional<Name>&& alternative)
+        : alternative(std::move(alternative))
+        {}
 
     void to_sql(std::ostream &os) const override;
 };

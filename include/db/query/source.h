@@ -5,7 +5,9 @@
 #include "db/table.h"
 
 struct Source : SqlSerializable {
-    std::variant<FunctionCall, Table, std::monostate> source;
+    std::variant<FunctionCall, Table> source;
+
+    Source() = default;
 
     template <typename T, std::enable_if_t<!std::is_same_v<Source, std::remove_reference_t<T>>, bool> = true>
     Source(T&& source)
@@ -17,6 +19,11 @@ struct Source : SqlSerializable {
 
 struct QualifiedSource : Source, AlternativeName {
     using Source::Source;
+
+    QualifiedSource(Source source, AlternativeName alternative)
+        : Source(std::move(source))
+        , AlternativeName(std::move(alternative))
+        {}
 
     template <typename T, std::enable_if_t<!std::is_same_v<QualifiedSource, std::remove_reference_t<T>>, bool> = true>
     QualifiedSource(T&& source, Name alternative)
