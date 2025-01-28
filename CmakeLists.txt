@@ -1,12 +1,41 @@
 cmake_minimum_required(VERSION 3.13)
 
-set(PROJECT_NAME parser)
-project(${PROJECT_NAME})
-
 # Set up the compiler flags
 set(CMAKE_CXX_FLAGS "-g")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(PROJECT_NAME parser)
+project(${PROJECT_NAME})
+
+find_package(BISON REQUIRED)
+find_package(FLEX REQUIRED)
+
+BISON_TARGET(bi_parser
+            ${PROJECT_SOURCE_DIR}/parser/parser.y
+            ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp)
+FLEX_TARGET(bi_lexer
+            ${PROJECT_SOURCE_DIR}/parser/lexer.l
+            ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
+ADD_FLEX_BISON_DEPENDENCY(bi_lexer bi_parser)
+
+set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/parser)
+include_directories(${COMMON_INCLUDES})
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+add_library(inner_parser OBJECT
+        ${FLEX_bi_lexer_OUTPUTS}
+        ${BISON_bi_parser_OUTPUTS}
+        ${PROJECT_SOURCE_DIR}/parser/driver.cpp
+)
+
+target_include_directories(inner_parser
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${FLEX_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_BINARY_DIR}
+)
 
 # Inlcude directories
 set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include)
@@ -21,10 +50,21 @@ target_compile_options(parser_lib PUBLIC ${COMPILE_OPTS})
 target_link_options(parser_lib PUBLIC ${LINK_OPTS})
 
 # Main is separate
-add_executable(parser ${PROJECT_SOURCE_DIR}/src/main.cpp)
+add_executable(parser
+    ${PROJECT_SOURCE_DIR}/src/main.cpp
+)
+
+
+# add_library(inner_parser
+# ${PROJECT_SOURCE_DIR}/parser/driver.cpp
+
+#     ${FLEX_bi_lexer_OUTPUTS}
+#     ${BISON_bi_parser_OUTPUTS}
+# )
+# target_link_libraries(inner_parser parser_lib)
 target_compile_options(parser PRIVATE ${COMPILE_OPTS})
 target_link_options(parser PRIVATE ${LINK_OPTS})
-target_link_libraries(parser parser_lib)
+target_link_libraries(parser parser_lib inner_parser)
 
 include(tests/Strict.cmake)
 setup_warnings(parser_lib)
