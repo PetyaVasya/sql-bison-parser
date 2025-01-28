@@ -10,6 +10,7 @@ TEST(QueryTest, TestOutput)
     std::ifstream sql{"tests/etc/query.sql"};
     std::stringstream buffer;
     buffer << sql.rdbuf();
+    sql.close();
 
     std::vector<JoinClause> joins;
     joins.emplace_back(
