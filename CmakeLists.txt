@@ -54,14 +54,6 @@ add_executable(parser
     ${PROJECT_SOURCE_DIR}/src/main.cpp
 )
 
-
-# add_library(inner_parser
-# ${PROJECT_SOURCE_DIR}/parser/driver.cpp
-
-#     ${FLEX_bi_lexer_OUTPUTS}
-#     ${BISON_bi_parser_OUTPUTS}
-# )
-# target_link_libraries(inner_parser parser_lib)
 target_compile_options(parser PRIVATE ${COMPILE_OPTS})
 target_link_options(parser PRIVATE ${LINK_OPTS})
 target_link_libraries(parser parser_lib inner_parser)
