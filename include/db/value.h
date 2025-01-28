@@ -10,9 +10,11 @@ struct SelectQuery;
 #include "function.h"
 
 struct Value : SqlSerializable {
-    std::variant<Name, Literal, FunctionCall, ArrayCall, SelectQuery*> value;
+    std::variant<Name, Literal, FunctionCall, ArrayCall, SelectQuery*, std::monostate> value;
 
-    Value() = default;
+    Value()
+        : value(std::monostate())
+        {}
 
     template <typename T, std::enable_if_t<!std::is_same_v<Value, std::remove_reference_t<T>>, bool> = true>
     Value(T&& value)
