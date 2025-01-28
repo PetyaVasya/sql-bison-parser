@@ -1,33 +1,10 @@
 #pragma once
 
-#include "serialize/sql.h"
-#include "predicate.h"
-#include "table.h"
+#include "db/serialize/sql.h"
+#include "db/predicate.h"
+#include "db/query/source.h"
 #include <vector>
 #include <optional>
-
-struct Source : SqlSerializable {
-    std::variant<FunctionCall, Table> source;
-
-    template <typename T>
-    Source(T&& source)
-        : source(std::forward<T>(source))
-        {}
-    
-    void to_sql(std::ostream &os) const override;
-};
-
-struct QualifiedSource : Source, AlternativeName {
-    using Source::Source;
-
-    template <typename T>
-    QualifiedSource(T&& source, Name alternative)
-        : Source(std::forward<T>(source))
-        , AlternativeName(std::move(alternative))
-        {}
-
-    void to_sql(std::ostream &os) const override;
-};
 
 struct FromClause : SqlSerializable {
     std::vector<QualifiedSource> sources;

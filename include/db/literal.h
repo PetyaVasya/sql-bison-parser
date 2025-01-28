@@ -1,5 +1,5 @@
 #pragma once
-#include "serialize/sql.h"
+#include "db/serialize/sql.h"
 #include <variant>
 
 struct Type: SqlSerializable {

@@ -1,7 +1,7 @@
 #pragma once
-#include "literal.h"
-#include "name.h"
-#include "serialize/sql.h"
+#include "db/literal.h"
+#include "db/name.h"
+#include "db/serialize/sql.h"
 
 struct Value;
 struct QualifiedValue;

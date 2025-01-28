@@ -3,8 +3,8 @@
 struct FunctionCall;
 struct ArrayCall;
 
-#include "name.h"
-#include "value.h"
+#include "db/name.h"
+#include "db/value.h"
 #include <vector>
 
 struct FunctionCall : Name {

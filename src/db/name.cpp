@@ -1,4 +1,4 @@
-#include "name.h"
+#include "db/name.h"
 
 void Name::to_sql(std::ostream &os) const {
     os << name;

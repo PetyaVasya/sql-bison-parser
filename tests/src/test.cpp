@@ -1,4 +1,4 @@
-#include "result.h"
+#include "db/result.h"
 #include <gtest/gtest.h>
 
 #include <fstream>

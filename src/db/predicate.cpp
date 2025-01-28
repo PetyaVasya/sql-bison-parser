@@ -1,4 +1,4 @@
-#include "predicate.h"
+#include "db/predicate.h"
 
 void Predicate::to_sql(std::ostream &os) const {
     switch (type) {

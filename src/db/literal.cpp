@@ -1,4 +1,4 @@
-#include "literal.h"
+#include "db/literal.h"
 
 void Integer::to_sql(std::ostream &os) const {
     os << value;

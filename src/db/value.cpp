@@ -1,5 +1,5 @@
-#include "value.h"
-#include "query.h"
+#include "db/value.h"
+#include "db/query/query.h"
 
 void Value::to_sql(std::ostream &os) const {
     static const overloads converter {

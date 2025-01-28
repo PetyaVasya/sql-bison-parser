@@ -1,6 +1,6 @@
 #pragma once
-#include "query.h"
-#include "serialize/sql.h"
+#include "db/query/query.h"
+#include "db/serialize/sql.h"
 #include <variant>
 
 struct Result: public SqlSerializable {

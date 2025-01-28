@@ -1,4 +1,4 @@
-#include "query.h"
+#include "db/query/query.h"
 
 void Source::to_sql(std::ostream &os) const {
     static const overloads converter {
