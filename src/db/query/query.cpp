@@ -2,7 +2,8 @@
 
 void Source::to_sql(std::ostream &os) const {
     static const overloads converter {
-        [&os](const auto& arg) { arg.to_sql(os); }
+        [&os](const auto& arg) { arg.to_sql(os); },
+        [](const std::monostate&) {}
     };
     std::visit(converter, source);
 }
@@ -50,14 +51,15 @@ void SelectQuery::to_sql(std::ostream &os) const {
     }
     BaseQuery::to_sql(os);
     if (!joins.empty()) {
-        SqlSerializable::to_sql(os, joins);
+        SqlSerializable::to_sql(os, joins, " ");
         os << " ";
     }
 }
 
 void Queries::to_sql(std::ostream &os) const {
     static const overloads converter {
-        [&os](const auto& arg) { arg.to_sql(os); }
+        [&os](const auto& arg) { arg.to_sql(os); },
+        [](const std::monostate) {}
     };
 
     std::visit(
